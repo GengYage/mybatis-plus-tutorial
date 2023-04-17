@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.yage.tutorial.mapper.UserMapper">
+    <select id="getUserDevice" resultType="org.yage.tutorial.entity.Device">
+        select d.*
+        from user u
+                 left join device d on u.id = d.owner
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

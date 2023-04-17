@@ -7,5 +7,5 @@ VALUES (1, 'Jone', 18, 'test1@baomidou.com'),
 
 INSERT INTO device (id, owner, sn)
 VALUES (1, 1, 'SN1'),
-       (2, 2, 'SN2'),
+       (2, 1, 'SN2'),
        (3, 3, 'SN3');

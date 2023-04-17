@@ -1,10 +1,13 @@
 package org.yage.tutorial;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.yage.tutorial.entity.Device;
 import org.yage.tutorial.entity.User;
+import org.yage.tutorial.mapper.UserMapper;
 import org.yage.tutorial.service.UserService;
 
 import javax.annotation.Resource;
@@ -47,7 +50,7 @@ class TutorialApplicationTests {
     public void testIn() {
         List<String> names = Arrays.asList("Jone", "Tom");
         List<User> users = userService.list(new LambdaQueryWrapper<User>()
-                // 某些api 可以条件拼接
+                // 某些api 可以条件拼接,如果names为空,则`in ()`将会导致语法错误
                 .in(names.size() > 0, User::getName, names)
                 // 是否排序,是否升序,哪个字段(可变参数,可以是多个参数)
                 .orderBy(true, true, User::getAge));
@@ -56,6 +59,12 @@ class TutorialApplicationTests {
 
     @Test
     public void testJoin() {
+        UserMapper userMapper = (UserMapper) userService.getBaseMapper();
 
+        // 联表查询,联表部分用xml,条件部分用wrapper,或者用mybatis-plus的联表查询插件
+        List<Device> userDevice = userMapper.getUserDevice(new QueryWrapper<>()
+                .eq("u.id", 1L)
+                .eq("d.sn", "SN2"));
+        log.info("user's devices: {}", userDevice);
     }
 }
