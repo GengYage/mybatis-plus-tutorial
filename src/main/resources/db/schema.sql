@@ -16,5 +16,6 @@ CREATE TABLE device
     id    BIGINT      NOT NULL COMMENT '主键ID',
     owner BIGINT      NULL DEFAULT NULL COMMENT '设备拥有者',
     sn    VARCHAR(32) NULL DEFAULT NULL COMMENT 'sn',
+    type  VARCHAR(32) NULL DEFAULT NULL COMMENT '设备类型',
     PRIMARY KEY (id)
 );
