@@ -2,6 +2,7 @@ package org.yage.tutorial;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +10,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.yage.tutorial.entity.Device;
 import org.yage.tutorial.entity.User;
+import org.yage.tutorial.entity.enumerate.DeviceType;
 import org.yage.tutorial.mapper.UserMapper;
+import org.yage.tutorial.service.DeviceService;
 import org.yage.tutorial.service.UserService;
 import org.yage.tutorial.utils.Jackson;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest
@@ -23,6 +27,8 @@ class TutorialApplicationTests {
 
     @Resource
     private UserService userService;
+    @Resource
+    private DeviceService deviceService;
 
 
     /**
@@ -89,5 +95,43 @@ class TutorialApplicationTests {
             log.error("parse page error", e);
         }
         log.info("page {}", pageStr);
+    }
+
+    @Test
+    public void testFill() {
+        Device device = new Device();
+        device.setSn("SN");
+        device.setType(DeviceType.PC);
+        device.setOwner(1L);
+
+        deviceService.save(device);
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        // update失效 字段填充失效
+        deviceService.update(new LambdaUpdateWrapper<Device>()
+                .eq(Device::getSn, "SN")
+                .set(Device::getOwner, 2L));
+    }
+
+    @Test
+    public void testFillSuccess() {
+        Device device = deviceService.getOne(new LambdaQueryWrapper<Device>()
+                .eq(Device::getSn, "SN"));
+
+        device.setOwner(3L);
+
+        // 成功,结论,就如同文档所言,填充器是设置实体类的值,没有实体类自然会失效
+        deviceService.updateById(device);
+        // deviceService.saveOrUpdate(device); saveOrUpdate 也同样失效
+    }
+
+    @Test
+    public void updateCase() {
+
     }
 }
