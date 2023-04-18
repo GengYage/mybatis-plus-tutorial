@@ -68,7 +68,13 @@ class TutorialApplicationTests {
         List<Device> userDevice = userMapper.getUserDevice(new QueryWrapper<>()
                 .eq("u.id", 1L)
                 .eq("d.sn", "SN2"));
-        log.info("user's devices: {}", userDevice);
+        String userDeviceStr = null;
+        try {
+            userDeviceStr = Jackson.getMapper().writeValueAsString(userDevice);
+        } catch (JsonProcessingException e) {
+            log.error("parse devices error", e);
+        }
+        log.info("user's devices: {}", userDeviceStr);
     }
 
     @Test

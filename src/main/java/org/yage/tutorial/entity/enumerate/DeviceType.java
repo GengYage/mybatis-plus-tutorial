@@ -1,6 +1,7 @@
 package org.yage.tutorial.entity.enumerate;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
@@ -14,6 +15,7 @@ public enum DeviceType {
     MAC(5, "mac"),
     ;
     private final int type;
+    @JsonValue
     @EnumValue
     private final String value;
 
