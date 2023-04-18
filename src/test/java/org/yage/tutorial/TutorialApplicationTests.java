@@ -2,6 +2,8 @@ package org.yage.tutorial;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +11,7 @@ import org.yage.tutorial.entity.Device;
 import org.yage.tutorial.entity.User;
 import org.yage.tutorial.mapper.UserMapper;
 import org.yage.tutorial.service.UserService;
+import org.yage.tutorial.utils.Jackson;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -66,5 +69,19 @@ class TutorialApplicationTests {
                 .eq("u.id", 1L)
                 .eq("d.sn", "SN2"));
         log.info("user's devices: {}", userDevice);
+    }
+
+    @Test
+    public void testPage() {
+        // mybatis-plus的页从1开始,小于1的默认置为1
+        Page<User> userPage = new Page<>(1, 2);
+        Page<User> page = userService.page(userPage, new LambdaQueryWrapper<User>().gt(User::getAge, 18));
+        String pageStr = null;
+        try {
+            pageStr = Jackson.getMapper().writeValueAsString(page);
+        } catch (JsonProcessingException e) {
+            log.error("parse page error", e);
+        }
+        log.info("page {}", pageStr);
     }
 }
